@@ -1,11 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Post & Comment Scraper",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "Scrape the current social post (LinkedIn today, more soon) and its comments into JSON.",
   "icons": {
+    "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",
     "48": "icons/icon-48.png",
+    "64": "icons/icon-64.png",
     "128": "icons/icon-128.png"
   },
   "permissions": ["scripting", "activeTab", "tabs", "storage"],
@@ -25,7 +27,14 @@
   },
   "action": {
     "default_title": "Scrape Post",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "64": "icons/icon-64.png",
+      "128": "icons/icon-128.png"
+    }
   },
   "content_scripts": [
     {
