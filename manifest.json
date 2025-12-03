@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Post & Comment Scraper",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Scrape the current social post (LinkedIn today, more soon) and its comments into JSON.",
   "icons": {
     "16": "icons/icon-16.png",
