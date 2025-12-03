@@ -141,7 +141,27 @@ async function getActiveTab() {
   });
 }
 
-function sendScrapeRequest(tabId) {
+async function sendScrapeRequest(tabId) {
+  try {
+    return await sendScrapeMessage(tabId);
+  } catch (error) {
+    const message = error?.message || "";
+    const missingReceiver =
+      message.includes("Receiving end does not exist") ||
+      message.includes("Could not establish connection") ||
+      message.includes("No matching message handler") ||
+      message.includes("The message port closed before a response was received.");
+
+    // If the content script isn't injected (fresh install or updated tab), try to inject it once.
+    if (missingReceiver && (await tryInjectContentScript(tabId))) {
+      return sendScrapeMessage(tabId);
+    }
+
+    throw error;
+  }
+}
+
+function sendScrapeMessage(tabId) {
   if (isFirefox) {
     return browserAPI.tabs.sendMessage(tabId, { type: "SCRAPE_LINKEDIN" });
   }
@@ -160,4 +180,27 @@ function sendScrapeRequest(tabId) {
       reject(error);
     }
   });
+}
+
+async function tryInjectContentScript(tabId) {
+  try {
+    if (browserAPI?.scripting?.executeScript) {
+      await browserAPI.scripting.executeScript({
+        target: { tabId },
+        files: ["contentScript.js"]
+      });
+      debugLog("Injected content script via scripting.executeScript");
+      return true;
+    }
+
+    // Legacy fallback (unlikely on MV3, but harmless if available).
+    if (browserAPI?.tabs?.executeScript) {
+      await browserAPI.tabs.executeScript(tabId, { file: "contentScript.js" });
+      debugLog("Injected content script via tabs.executeScript");
+      return true;
+    }
+  } catch (err) {
+    debugLog("Failed to inject content script", err?.message || err);
+  }
+  return false;
 }
